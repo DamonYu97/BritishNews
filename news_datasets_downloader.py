@@ -3,6 +3,7 @@ from io import BytesIO
 from time import time
 from shutil import unpack_archive
 from tempfile import NamedTemporaryFile
+from tqdm import tqdm
 from urllib.request import urlopen
 from zipfile import ZipFile
 
@@ -10,7 +11,7 @@ import pandas as pd
 
 
 def download_file(url, filepath):
-    with urlopen(url) as zipresp:
+    with urlopen(url, timeout=60) as zipresp:
         with ZipFile(BytesIO(zipresp.read())) as zfile:
             zfile.extractall(filepath)
 
@@ -27,13 +28,14 @@ def download_single_dataset_items(dataset, destination_dir):
     dataset_folder_path = os.path.join(str(news_folder_path), dataset['type'])
     print("Downloading dataset to " + dataset_folder_path)
     os.makedirs(dataset_folder_path, exist_ok=True)
-
     items = dataset["items"]
-    for item in items:
+    for item in tqdm(items):
         filename = item["filename"][:-4]
         download_url = item["download_link"]
         download_path = os.path.join(dataset_folder_path, filename)
-        print(f"Downloading {download_url} to {download_path}")
+        if os.path.exists(download_path):
+            continue
+        #print(f"Downloading {download_url} to {download_path}")
         download_file(download_url, download_path)
 
 
@@ -48,6 +50,17 @@ def download_single_news_items(dataset_df, destination_dir, news_title, dataset_
         download_single_dataset_items(news_dataset, destination_dir)
 
 
+def download_all_news(dataset_df, destination_dir, dataset_type="all"):
+    # find news datasets
+    news_datasets = dataset_df
+    if dataset_type == "plain_text" or dataset_type == "alto":
+        news_datasets = dataset_df[dataset_df["type"] == dataset_type]
+    # if not plai_text or alto, it will download for both types
+    news_datasets = news_datasets.to_dict(orient="records")
+    for news_dataset in news_datasets:
+        download_single_dataset_items(news_dataset, destination_dir)
+
+
 def main():
     # load all news metadata, which has news title and file download links
     news_scraped_metadata_df = pd.read_json("generated_files/newspapers_list.json")
@@ -56,9 +69,10 @@ def main():
         lambda x: 'plain_text' if x.endswith('[plaintext]') or x.endswith('(plaintext)') else 'alto')
     news_scraped_metadata_df['title'] = news_scraped_metadata_df["title"].str.replace(r"\s*[\[\(]plaintext[\]\)]$", "",
                                                                                       regex=True)
-    test_news_title = "Widnes Examiner"
-    test_destination = "/Users/lilinyu/Documents/PhD/BritishNews/"
-    download_single_news_items(news_scraped_metadata_df, test_destination, test_news_title, "plain_text")
+    #test_news_title = "Widnes Examiner"
+    test_destination = "/Users/lilinyu/Documents/PhD/BritishNews/datasets"
+    #download_single_news_items(news_scraped_metadata_df, test_destination, test_news_title, "alto")
+    download_all_news(news_scraped_metadata_df, test_destination, dataset_type="alto")
 
 if __name__ == "__main__":
     # test_url = "https://bl.iro.bl.uk//downloads/3dd95669-433f-46e1-ac95-0a8543951de9?locale=en"

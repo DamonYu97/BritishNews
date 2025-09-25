@@ -5,3 +5,4 @@ beautifulsoup4
 matplotlib-venn
 matplotlib
 plotly[express]
+tqdm
