@@ -1,0 +1,7 @@
+pydantic
+pandas
+requests
+beautifulsoup4
+matplotlib-venn
+matplotlib
+plotly[express]
