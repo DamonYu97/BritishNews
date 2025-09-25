@@ -50,7 +50,7 @@ def download_single_news_items(dataset_df, destination_dir, news_title, dataset_
 
 def main():
     # load all news metadata, which has news title and file download links
-    news_scraped_metadata_df = pd.read_json("newspapers_list.json")
+    news_scraped_metadata_df = pd.read_json("generated_files/newspapers_list.json")
     # reformat title and get dataset type
     news_scraped_metadata_df['type'] = news_scraped_metadata_df['title'].apply(
         lambda x: 'plain_text' if x.endswith('[plaintext]') or x.endswith('(plaintext)') else 'alto')

@@ -154,5 +154,5 @@ def get_files_metadata_for_single_newspaper(f_url, f_soup):
 if __name__ == "__main__":
     newspaper_datasets_url = "https://bl.iro.bl.uk/collections/9a6a4cdd-2bfe-47bb-8c14-c0a5d100501f?locale=en"
     all_news = fetch_all_newspapers_metadata(newspaper_datasets_url)
-    with open("newspapers_list.json", "w") as f:
+    with open("generated_files/newspapers_list.json", "w") as f:
         json.dump(all_news, f)
