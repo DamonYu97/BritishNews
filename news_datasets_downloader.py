@@ -36,7 +36,10 @@ def download_single_dataset_items(dataset, destination_dir):
         if os.path.exists(download_path):
             continue
         #print(f"Downloading {download_url} to {download_path}")
-        download_file(download_url, download_path)
+        try:
+            download_file(download_url, download_path)
+        except Exception:
+            print(f"Failed to download file {filename} from {download_url}")
 
 
 def download_single_news_items(dataset_df, destination_dir, news_title, dataset_type="all"):
@@ -69,10 +72,10 @@ def main():
         lambda x: 'plain_text' if x.endswith('[plaintext]') or x.endswith('(plaintext)') else 'alto')
     news_scraped_metadata_df['title'] = news_scraped_metadata_df["title"].str.replace(r"\s*[\[\(]plaintext[\]\)]$", "",
                                                                                       regex=True)
-    #test_news_title = "Widnes Examiner"
+    test_news_title = "Widnes Examiner"
     test_destination = "/Users/lilinyu/Documents/PhD/BritishNews/datasets"
-    #download_single_news_items(news_scraped_metadata_df, test_destination, test_news_title, "alto")
-    download_all_news(news_scraped_metadata_df, test_destination, dataset_type="alto")
+    download_single_news_items(news_scraped_metadata_df, test_destination, test_news_title, "alto")
+    #download_all_news(news_scraped_metadata_df, test_destination, dataset_type="alto")
 
 if __name__ == "__main__":
     # test_url = "https://bl.iro.bl.uk//downloads/3dd95669-433f-46e1-ac95-0a8543951de9?locale=en"

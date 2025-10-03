@@ -6,3 +6,4 @@ matplotlib-venn
 matplotlib
 plotly[express]
 tqdm
+lxml
