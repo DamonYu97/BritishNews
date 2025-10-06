@@ -86,20 +86,18 @@ def index_file(file_path: Path, thread_count: int = 6, chunk_size: int = 1500) -
     success = 0
 
     with tqdm(total=total, desc=f"Processing {file_path.name}", unit="doc") as pbar:
-        for ok, _ in helpers.parallel_bulk(
+        for ok, info in helpers.parallel_bulk(
             client,
             actions_from_list(docs),
             thread_count=thread_count,
             chunk_size=chunk_size,
-            max_retries=5,
-            initial_backoff=1,
-            max_backoff=60,
-            request_timeout=60,
             raise_on_error=False,
             raise_on_exception=False,
         ):
             if ok:
                 success += 1
+            else:
+                print('A document failed:', info)
             pbar.update(1)
 
     return success
@@ -122,7 +120,7 @@ if __name__ == "__main__":
 
     total_docs = 0
     for fp in news_items_paths:
-        total_docs += index_file(fp, thread_count=6, chunk_size=1500)
+        total_docs += index_file(fp, thread_count=6, chunk_size=100)
 
     refresh_quietly()
     print(f"Done. Indexed {total_docs} documents into '{INDEX}'.")
