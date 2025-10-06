@@ -28,10 +28,10 @@ def parse_metadata_xml(xml_path: Path) -> dict:
     # Avoid repeated XPath strings; ElementTree is C-accelerated for .find/.findtext
     return {
         "publication_id": pub.attrib.get("id"),
-        "source": (pub.findtext("source") or ""),
-        "title": (pub.findtext("title") or ""),
-        "location": (pub.findtext("location") or ""),
-        "issues_id": issue.attrib.get("id"),
+        "news_source": (pub.findtext("source") or ""),
+        "news_title": (pub.findtext("title") or ""),
+        "issue_location": (pub.findtext("location") or ""),
+        "issue_id": issue.attrib.get("id"),
         "issue_date": (issue.findtext("date") or ""),
         "item_id": item.attrib.get("id"),
         "item_plain_text_file": (item.findtext("plain_text_file") or ""),
@@ -64,7 +64,7 @@ def get_items_from_issue_dir(metadata_issue_dir: Path, plaintext_issue_dir: Path
         except FileNotFoundError:
             text = ""  # or continue
 
-        meta["text"] = text
+        meta["item_text"] = text
         items.append(meta)
     return items
 
@@ -115,6 +115,7 @@ def get_volume_news_items(volume_path: Path, max_workers: int | None = None) -> 
                 pass
     return results
 
+
 def get_news_items(plaintext_news_root: Path) -> list[dict]:
     items: list[dict] = []
     # volumes = directories under .../<news>/plain_text/
@@ -123,6 +124,7 @@ def get_news_items(plaintext_news_root: Path) -> list[dict]:
         for vol, v_items in zip(vols, executor.map(get_volume_news_items, vols)):
             items.extend(v_items)
     return items
+
 
 def get_all_news_items(dataset_root: Path) -> list[dict]:
     items: list[dict] = []
@@ -158,24 +160,6 @@ def write_news_items_jsonl_stream(news_dir: Path, out_path: Path) -> None:
                 rec["news_name"] = news_dir.name
                 out.write(json.dumps(rec, ensure_ascii=False) + "\n")
 
-# --------- Optional: JSONL streaming writer (no giant list in RAM) ---------
-def write_all_items_jsonl_stream(dataset_root: Path, out_path: Path) -> None:
-    """Memory-light path: stream results directly to JSON Lines."""
-    with out_path.open("w", encoding="utf-8", buffering=1 << 20) as out:
-        for news_dir in dataset_root.iterdir():
-            if not news_dir.is_dir():
-                continue
-            print(f"Processing news: {news_dir.name}")
-            pt_dir = news_dir / "plain_text"
-            if not pt_dir.exists():
-                continue
-            for vol in pt_dir.iterdir():
-                if not vol.is_dir():
-                    continue
-                print(f"  Volume: {vol.name}")
-                for rec in get_volume_news_items(vol):
-                    rec["news_name"] = news_dir.name
-                    out.write(json.dumps(rec, ensure_ascii=False) + "\n")
 
 # --------- Main ---------
 if __name__ == "__main__":
@@ -197,9 +181,11 @@ if __name__ == "__main__":
             continue
         items = get_news_items(pt_dir)
         with out_path.open("w", encoding="utf-8", buffering=1 << 20) as out:
+            out.write("[")
             for item in items:
                 item["news_name"] = news_dir.name
                 out.write(json.dumps(item, ensure_ascii=False) + "\n")
+            out.write("]")
 
     print(f"Finished in {time.time() - start_time} seconds.")
 
