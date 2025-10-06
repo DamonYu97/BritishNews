@@ -7,4 +7,4 @@ matplotlib
 plotly[express]
 tqdm
 lxml
-elasticsearch
+elasticsearch<=8.15.0
