@@ -181,11 +181,9 @@ if __name__ == "__main__":
             continue
         items = get_news_items(pt_dir)
         with out_path.open("w", encoding="utf-8", buffering=1 << 20) as out:
-            out.write("[")
             for item in items:
                 item["news_name"] = news_dir.name
-                out.write(json.dumps(item, ensure_ascii=False) + "\n")
-            out.write("]")
+            json.dump(items, out, ensure_ascii=False)
 
     print(f"Finished in {time.time() - start_time} seconds.")
 
