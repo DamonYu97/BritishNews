@@ -64,11 +64,6 @@ mappings = {
 
 def actions_from_list(docs: Iterable[Dict]) -> Iterable[Dict]:
     for doc in docs:
-        doc["news_title"] = doc.pop("title")
-        doc["news_source"] = doc.pop("source")
-        doc["issue_id"] = doc.pop("issues_id")
-        doc["issue_location"] = doc.pop("location")
-        doc["item_text"] = doc.pop("text")
         doc["collection"] = "British Library Newspapers"
         doc_id = doc["publication_id"] + doc["issue_id"] + doc["item_id"]
         yield {
@@ -115,7 +110,7 @@ if __name__ == "__main__":
     if not client.indices.exists(index=INDEX):
         client.indices.create(index=INDEX, settings=settings, mappings=mappings)
 
-    news_items_folder_path = Path("../generated_files/plain_text_dfs2")
+    news_items_folder_path = Path("../generated_files/plain_text_dfs")
     news_items_paths = [item_path for item_path in news_items_folder_path.glob("*.json")]
 
     total_docs = 0
