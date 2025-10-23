@@ -1,4 +1,4 @@
-from event_extraction.OmniEvent.extractor import Extractor
+from extractor import Extractor
 
 if __name__ == '__main__':
     extractor = Extractor()
