@@ -9,6 +9,7 @@ from utils import get_google_cloud_storage
 if __name__ == '__main__':
     # load dataframe
     batch_size = int(sys.argv[1])
+    schema = sys.argv[2]
     cloud_storage = get_google_cloud_storage()
     input_filename = "ee/sources/broadsides_subs_kg_hq_df"
     df = cloud_storage.read_pandas_json(input_filename, orient="index")
@@ -21,14 +22,14 @@ if __name__ == '__main__':
     with tqdm(total=len_texts, desc="Batch event extraction progress") as pbar:
         while current_index < len_texts:
             if current_index + batch_size > len_texts:
-                chunk_result = extractor.extract_events(texts[current_index:])
+                chunk_result = extractor.extract_events(texts[current_index:], schema)
                 pbar.update(len_texts - current_index)
             else:
-                chunk_result = extractor.extract_events(texts[current_index:current_index + batch_size])
+                chunk_result = extractor.extract_events(texts[current_index:current_index + batch_size], schema)
                 pbar.update(batch_size)
             results.extend(chunk_result)
             current_index += batch_size
 
-    output_filename = f"ee/results/broadsides_ee.json"
+    output_filename = f"ee/results/broadsides_ee_{schema}.json"
     print(f"Saving results to {output_filename}")
     cloud_storage.write_str(json.dumps(results), output_filename)
