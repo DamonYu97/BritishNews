@@ -13,7 +13,7 @@ class GoogleCloudStorage:
 
     def read_json(self, filename):
         blob = self.bucket.blob(filename)
-        with blob.open("r") as stream:
+        with blob.open("r", encoding="utf-8") as stream:
             result = json.load(stream)
         return result
 
