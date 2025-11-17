@@ -26,6 +26,15 @@ class Extractor:
         events = do_event_detection(self.ed_model, self.ed_tokenizer, texts, schemas, self.device)
         print("Running event argument extraction...")
         instances = prepare_for_eae_from_pred(texts, events, schemas)
+        sum_triggers = sum([len(instance["triggers"]) for instance in instances])
+        if sum_triggers == 0:
+            results = []
+            for instance in instances:
+                results.append({
+                    "text": instance["text"],
+                    "events": []
+                })
+            return results
         arguments = do_event_argument_extraction(self.eae_model, self.eae_tokenizer, instances, self.device)
         print(f"Getting event extraction results...")
         results = get_eae_result(instances, arguments)

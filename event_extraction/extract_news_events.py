@@ -28,7 +28,7 @@ if __name__ == '__main__':
                     "events": c_ee["events"],
                 })
         article["ee_result"] = article_ee_result
-        print(article_ee_result)
+        #print(article_ee_result)
 
     news_name = articles[0]["news_name"]
     output_filename = f"ee/results/{news_name}_ee_{schema}_test.json"
