@@ -20,11 +20,11 @@ class Extractor:
 
     def extract_events(self, texts, schema="ace"):
         schemas = len(texts) * [f"<{schema}>"]
-        print(f"Extracting events for {len(texts)} texts...")
-        print(f"Running event detection.....")
+        #print(f"Extracting events for {len(texts)} texts...")
+        #print(f"Running event detection.....")
         start_time = time.time()
         events = do_event_detection(self.ed_model, self.ed_tokenizer, texts, schemas, self.device)
-        print("Running event argument extraction...")
+        #print("Running event argument extraction...")
         instances = prepare_for_eae_from_pred(texts, events, schemas)
         sum_triggers = sum([len(instance["triggers"]) for instance in instances])
         if sum_triggers == 0:
@@ -36,9 +36,9 @@ class Extractor:
                 })
             return results
         arguments = do_event_argument_extraction(self.eae_model, self.eae_tokenizer, instances, self.device)
-        print(f"Getting event extraction results...")
+        #print(f"Getting event extraction results...")
         results = get_eae_result(instances, arguments)
-        print(f"Event extraction is completed in {time.time() - start_time:.2f} seconds.")
+        #print(f"Event extraction is completed in {time.time() - start_time:.2f} seconds.")
         return results
 
     def batch_extract_events(self, texts, schema="ace", batch_size=10):
