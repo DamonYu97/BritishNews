@@ -22,7 +22,7 @@ if __name__ == '__main__':
     for text in tqdm(texts):
         # split article into small chunks with at most 20 tokens, each chunk should include only complete sentences.
         chunks, offsets = chunk(text, max_sequence_length=20)
-        chunk_ee_tmp = extractor.extract_events(chunks, schema)
+        chunk_ee_tmp = extractor.batch_extract_events(chunks, schema)
         ee_result = []
         for offset, c_ee in zip(offsets, chunk_ee_tmp):
             if len(c_ee["events"]) > 0:

@@ -41,3 +41,15 @@ class Extractor:
         print(f"Event extraction is completed in {time.time() - start_time:.2f} seconds.")
         return results
 
+    def batch_extract_events(self, texts, schema="ace", batch_size=10):
+        current_index = 0
+        len_texts = len(texts)
+        results = []
+        while current_index < len_texts:
+            if current_index + batch_size > len_texts:
+                chunk_result = self.extract_events(texts[current_index:], schema)
+            else:
+                chunk_result = self.extract_events(texts[current_index:current_index + batch_size], schema)
+            results.extend(chunk_result)
+        return results
+
