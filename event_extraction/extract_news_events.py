@@ -31,6 +31,6 @@ if __name__ == '__main__':
         #print(article_ee_result)
 
     news_name = articles[0]["news_name"]
-    output_filename = f"ee/results/{news_name}_ee_{schema}_test.json"
+    output_filename = f"ee/results/{news_name}_ee_{schema}.json"
     print(f"Saving results to {output_filename}")
     cloud_storage.write_str(json.dumps(articles), output_filename)

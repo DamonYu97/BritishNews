@@ -51,5 +51,6 @@ class Extractor:
             else:
                 chunk_result = self.extract_events(texts[current_index:current_index + batch_size], schema)
             results.extend(chunk_result)
+            current_index += batch_size
         return results
 

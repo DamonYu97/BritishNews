@@ -32,7 +32,7 @@ def chunk(text, max_sequence_length=512):
         if len(sentence) == 0:
             print(previous_end)
             raise Exception('Empty sentence')
-        sent_start = text.find(sentence, previous_end, previous_end + len(sentence) + 2)
+        sent_start = text.find(sentence, previous_end)
         sent_end = sent_start + len(sentence)
         if sent_start < 0:
             raise Exception("Cannot find start index of the sentence")
