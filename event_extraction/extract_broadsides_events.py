@@ -34,4 +34,4 @@ if __name__ == '__main__':
     df["ee_result"] = ee_results
     output_filename = f"ee/results/broadsides_ee_{schema}.json"
     print(f"Saving results to {output_filename}")
-    cloud_storage.write_str(json.dumps(df.to_json()), output_filename)
+    cloud_storage.write_str(df.to_json(orient="records"), output_filename)
